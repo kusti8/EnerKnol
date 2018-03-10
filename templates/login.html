@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login to your Calendar</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/login.css') }}">
+</head>
+<body>
+
+<h1 class="title">Welcome to your calendar!</h1>
+
+<div class="flex-column">
+<div class="flex-container">
+
+<div>
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
+
+<form method="post">
+    <div class="title">Login</div>
+    Username:<br>
+    <input type="text" name="username"><br>
+    Password:<br>
+    <input type="password" name="password"><br>
+    <input type="submit" value="Submit">
+</form>
+</div>
+
+<div>
+
+<form method="post" action="/register">
+    <div class="title">Register</div>
+    Username:<br>
+    <input type="text" name="username"><br>
+    Password:<br>
+    <input type="password" name="password"><br>
+    Confirm Password:<br>
+    <input type="password" name="confirm_password"><br>
+    First name:<br>
+    <input type="text" name="first_name"><br>
+    Last name:<br>
+    <input type="text" name="last_name"><br>
+    Email:<br>
+    <input type="text" name="email"><br>
+    <input type="submit" value="Submit">
+</form>
+</div>
+
+</div>
+</div>
+</body>
+</html>
