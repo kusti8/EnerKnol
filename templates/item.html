@@ -30,7 +30,11 @@
     <img src="{{ movie.image }}"/>
     <div style="vertical-align: top; padding: 8px;">{{ movie.description }}<br>
         <div style="color: #aaaaaa">
-            {{ movie.mpaa_rating + ' | ' + ', '.join(movie.genres) }}<br>
+            {% if 'mpaa_rating' not in movie %}
+                {{ ', '.join(movie.genres) }}<br>
+            {% else %}
+                {{ movie.mpaa_rating + ' | ' + ', '.join(movie.genres) }}<br>
+            {% endif %}
             Director(s): {{ ', '.join(movie.directors) }} | Stars: {{ ', '.join(movie.stars) }}<br><br>
             <strong>
                 ImDB Rating: {{ movie.imdb_rating/10.0 }}
