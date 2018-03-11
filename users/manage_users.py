@@ -6,7 +6,7 @@ import os
 
 class ManageUsers():
     def __init__(self): # Connect to the database
-        eng = create_engine(os.environ['MYSQL_URL'])
+        eng = create_engine(os.environ['MYSQL_URL'], isolation_level="READ UNCOMMITTED")
 
         Base.metadata.bind = eng
 
