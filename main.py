@@ -114,3 +114,6 @@ def item():
         favorite = request.form['favorite'] == 'true'
         user_manager.set_favorite(session['username'], request.form['id'], favorite)
         return 'Success'
+
+if __name__ == '__main__':
+    app.run(debug=True, use_reloader=True)

@@ -9,6 +9,7 @@ elasticsearch-dsl==6.1.0
 enum34==1.1.6
 flake8==3.5.0
 Flask==0.12.2
+gunicorn==19.7.1
 idna==2.6
 ipaddress==1.0.19
 itsdangerous==0.24
