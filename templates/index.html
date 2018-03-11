@@ -4,9 +4,6 @@
     <title>Welcome to MovieSearch</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/index.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-    <script src="{{ url_for('static',filename='js/index.js') }}"></script>
 </head>
 <body>
 <div class="flex-search">
@@ -19,28 +16,42 @@
 <input id="search-box" class="search" type="text" name="search_text" placeholder="Search.." />
 <button id="favorites" type="button" onclick="showFavorites()">Favorites</button>
 
-<ol id="search-results" start="">
-
+<a href="{{ url_for('index', page=sub_one(request.args.get('page', '1')), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false') }}">Previous</a>
+<a href="{{ url_for('index', page=add_one(request.args.get('page', '1'), len(movies)), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false') }}">Next</a>
+<ol>
+    {% for movie in movies %}
+        {% if type(movie) is Response %}
+            <li style="background-color: white; color: black;" id={i}>
+                <article>
+                    <h1 style="text-align: start;"><a target="_blank" href="{{ url_for('item') + '?id=' + movie._id }}" rel="external">{{ movie._source.title + " " + movie._source.year }}</a></h1>
+                    <p style="display: flex;"><img src="{{ movie._source.image }}"/><div style="vertical-align: top; padding: 8px; ">{{ movie._source.description }}</div></p>
+                </article>
+            </li>
+        {% else %}
+            <li style="background-color: white; color: black;" id={i}>
+                <article>
+                    <h1 style="text-align: start;"><a target="_blank" href="{{ url_for('item') + '?id=' + str(movie._id) }}" rel="external">{{ movie.title + " " + movie.year }}</a></h1>
+                    <p style="display: flex;"><img src="{{ movie.image }}"/><div style="vertical-align: top; padding: 8px; ">{{ movie.description }}</div></p>
+                </article>
+            </li>
+        {% endif %}
+    {% endfor %}
 </ol>
 
 </div>
 <script>
     $('#search-box').keypress(function (e) {
         if (e.which === 13) {
-            $.post("{{ url_for('search') }}", {
-                general: $("#search-box").val()
-            }, function(data, status) {
-                renderSearchResults(data.hits.hits, "{{ url_for('item') }}")
-            })
+            window.location.href = "{{ url_for('index') }}?q=" + $('#search-box').val()
         }
     })
 
     function showFavorites() {
-        $.getJSON("{{ url_for('favorites') }}", function (data) {
-            console.log(data)
-            renderSearchResults(data, "{{ url_for('item') }}")
-        })
+        window.location.href = "{{ url_for('index') }}?favorites=true"
     }
+    {% if response.args.get('q') %}
+        $('#search-box').val("{{ response.args.get('q') }}")
+    {% endif %}
 </script>
 </body>
 </html>

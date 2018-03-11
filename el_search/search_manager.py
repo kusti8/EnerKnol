@@ -63,7 +63,7 @@ class MovieItemManager():
             pass
 
         results = MovieItem.search().query('multi_match', query=general, fields=search_fields).execute()
-        return results.to_dict()
+        return results
 
     def get_movie(self, id):
         results = MovieItemDB.objects(id=id)
