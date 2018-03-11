@@ -2,10 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from passlib.apps import custom_app_context as pwd_context # Used for hashing
 from models import User, Base
+import os
 
 class ManageUsers():
     def __init__(self): # Connect to the database
-        eng = create_engine('sqlite:///users.db')
+        eng = create_engine(os.environ['MYSQL_URL'])
 
         Base.metadata.bind = eng
 

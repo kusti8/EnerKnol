@@ -17,7 +17,6 @@ class MovieItem(DocType):
     imdb_rating = Integer()
     metascore = Integer()
     image = Text()
-    favorite = Boolean()
 
     class Meta:
         index = 'movies'
@@ -33,7 +32,6 @@ class MovieItemDB(Document):
     imdb_rating = IntField()
     metascore = IntField()
     image = StringField()
-    favorite = BooleanField()
 
 class MovieItemManager():
     def __init__(self):
@@ -69,8 +67,8 @@ class MovieItemManager():
         results = results[min_range:max_range].execute()
         return results
 
-    def get_movie(self, id): # Return a movie from MongoDB
-        results = MovieItemDB.objects(id=id)
+    def get_movie(self, i): # Return a movie from MongoDB
+        results = MovieItemDB.objects(id=i)
         if results:
             return results[0].to_mongo().to_dict()
         else:
