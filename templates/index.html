@@ -17,10 +17,10 @@
 <button id="favorites" type="button" onclick="showFavorites()">Favorites</button>
 
 {% if sub_one(request.args.get('page', '1')) != request.args.get('page', '1') %}
-<a href="{{ url_for('index', page=sub_one(request.args.get('page', '1')), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false')) }}">Previous</a>
+<strong><a href="{{ url_for('index', page=sub_one(request.args.get('page', '1')), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false')) }}">Previous</a></strong>
 {% endif %}
 {% if add_one(request.args.get('page', '1'), full_length ) != request.args.get('page', '1') %}
-<a href="{{ url_for('index', page=add_one(request.args.get('page', '1'), full_length ), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false')) }}">Next</a>
+<strong><a href="{{ url_for('index', page=add_one(request.args.get('page', '1'), full_length ), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false')) }}">Next</a></strong>
 {% endif %}
 <ol start="{{ (int(request.args.get('page', '1'))-1)*PAGE_SIZE+1 }}">
     {% for movie in movies %}

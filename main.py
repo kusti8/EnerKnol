@@ -3,6 +3,7 @@ from users.manage_users import ManageUsers, User
 from el_search.search_manager import MovieItemManager
 from elasticsearch_dsl.response import Response
 import math
+import re
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = '\xd9J\xde\xec\xb5\'\x08\x89jG\xe3\xb2\x06\xb5\xbf\x88\xe9"\x84e\xd2\xf0\x95\xdd'
@@ -54,12 +55,15 @@ def register():
     error = None
     if request.form['password'] != request.form['confirm_password']:
         error = "Passwords don't match"
-    new_user = User(Username=request.form['username'], Password=request.form['password'], FirstName=request.form['first_name'], LastName=request.form['last_name'], Email=request.form['email'])
-    if user_manager.add_user(new_user):
-        session['username'] = request.form['username']
-        return redirect(url_for('index')) # Go to the movie search
+    elif not re.match(r'[^@]+@[^@]+\.[^@]+', request.form['email']):
+        error = "Invalid email"
     else:
-        error = "Username is already taken"
+        new_user = User(Username=request.form['username'], Password=request.form['password'], FirstName=request.form['first_name'], LastName=request.form['last_name'], Email=request.form['email'])
+        if user_manager.add_user(new_user):
+            session['username'] = request.form['username']
+            return redirect(url_for('index')) # Go to the movie search
+        else:
+            error = "Username is already taken"
     
     flash(error)
     return redirect(url_for('login'))
