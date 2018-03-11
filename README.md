@@ -36,10 +36,10 @@ The file structure is separated into groups of files that perform similar functi
 
 Total movies: ~15,000
 
-Flask server - Heroku
-MySQL - AWS
-MongoDB - mLab
-ElasticSearch - ElasticCloud
+* Flask server - Heroku
+* MySQL - AWS
+* MongoDB - mLab
+* ElasticSearch - ElasticCloud
 
 ## File Descriptions
 
