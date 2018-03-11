@@ -16,11 +16,15 @@
 <input id="search-box" class="search" type="text" name="search_text" placeholder="Search.." />
 <button id="favorites" type="button" onclick="showFavorites()">Favorites</button>
 
-<a href="{{ url_for('index', page=sub_one(request.args.get('page', '1')), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false') }}">Previous</a>
-<a href="{{ url_for('index', page=add_one(request.args.get('page', '1'), len(movies)), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false') }}">Next</a>
-<ol>
+{% if sub_one(request.args.get('page', '1')) != request.args.get('page', '1') %}
+<a href="{{ url_for('index', page=sub_one(request.args.get('page', '1')), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false')) }}">Previous</a>
+{% endif %}
+{% if add_one(request.args.get('page', '1'), full_length ) != request.args.get('page', '1') %}
+<a href="{{ url_for('index', page=add_one(request.args.get('page', '1'), full_length ), q=request.args.get('q', ''), favorites=request.args.get('favorites', 'false')) }}">Next</a>
+{% endif %}
+<ol start="{{ (int(request.args.get('page', '1'))-1)*PAGE_SIZE+1 }}">
     {% for movie in movies %}
-        {% if type(movie) is Response %}
+        {% if isinstance(movie, Response) %}
             <li style="background-color: white; color: black;" id={i}>
                 <article>
                     <h1 style="text-align: start;"><a target="_blank" href="{{ url_for('item') + '?id=' + movie._id }}" rel="external">{{ movie._source.title + " " + movie._source.year }}</a></h1>
@@ -49,8 +53,8 @@
     function showFavorites() {
         window.location.href = "{{ url_for('index') }}?favorites=true"
     }
-    {% if response.args.get('q') %}
-        $('#search-box').val("{{ response.args.get('q') }}")
+    {% if request.args.get('q') %}
+        $('#search-box').val("{{ request.args.get('q') }}")
     {% endif %}
 </script>
 </body>

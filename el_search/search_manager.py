@@ -57,12 +57,15 @@ class MovieItemManager():
         movie_info._id = movie_info_db.id # Sync the IDs
         movie_info.save()
 
-    def search(self, general, filters=None):
+    def search(self, general, filters=None, page=1, PAGE_SIZE=5):
         search_fields = ['title', 'directors', 'stars', 'description']
         if filters:
             pass
 
-        results = MovieItem.search().query('multi_match', query=general, fields=search_fields).execute()
+        results = MovieItem.search().query('multi_match', query=general, fields=search_fields)
+        min_range = (page-1)*PAGE_SIZE
+        max_range = page*PAGE_SIZE
+        results = results[min_range:max_range].execute()
         return results
 
     def get_movie(self, id):

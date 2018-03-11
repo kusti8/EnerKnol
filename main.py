@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for, flash, get_flashed_messages, jsonify, abort
 from users.manage_users import ManageUsers, User
 from el_search.search_manager import MovieItemManager
-from elasticsearch_dsl import Response
+from elasticsearch_dsl.response import Response
 import math
 
 app = Flask(__name__, template_folder='templates')
@@ -9,7 +9,7 @@ app.secret_key = '\xd9J\xde\xec\xb5\'\x08\x89jG\xe3\xb2\x06\xb5\xbf\x88\xe9"\x84
 user_manager = ManageUsers()
 movie_manager = MovieItemManager()
 
-PAGE_SIZE = 5.0
+PAGE_SIZE = 5
 
 def check_login(): # Checks if the user is logged in
     if 'username' not in session: # We are not logged in
@@ -22,14 +22,14 @@ def sub_one(value): # Used for the index page counter
     value -= 1
     if value < 1:
         value = 1
-    return str(value)
+    return str(int(value))
 
 def add_one(value, length):
     value = int(value)
     value += 1
-    if value > math.ceil(length/PAGE_SIZE): # Over the page limit
-        value = math.ceil(length/PAGE_SIZE)
-    return str(value)
+    if value > math.ceil(length/float(PAGE_SIZE)): # Over the page limit
+        value = math.ceil(length/float(PAGE_SIZE))
+    return str(int(value))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -66,6 +66,13 @@ def register():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    def get_length(page):
+        min_range = (page-1)*PAGE_SIZE
+        max_range = page*PAGE_SIZE
+        if max_range > full_length:
+            max_range = full_length
+        return (min_range, max_range)
+
     if check_login():
         return check_login()
     
@@ -74,20 +81,22 @@ def index():
             session.pop('username', None)
             return redirect(url_for('login'))
 
-    movies = []
+    full_length = 0
+    page = int(request.args.get('page', '1'))
     if request.args.get('favorites') == 'true':
         movies = [movie_manager.get_movie(i) for i in user_manager.get_favorites(session['username'])]
-    else if request.args.get('q'):
-        movies = movie_manager.search(request.args.get('q'))
-
-    page = int(request.args.get('page', '1'))
-
-    min_range = (page-1)
-    movies = movies[(page-1)*PAGE_SIZE:page*5]
+        full_length = len(movies)
+        min_range, max_range = get_length(page)
+        movies = movies[min_range:max_range]
+    elif request.args.get('q'):
+        movies = movie_manager.search(request.args.get('q'), page=page, PAGE_SIZE=PAGE_SIZE)
+        full_length = movies.hits.total
+    else:
+        movies=[]
 
     user = user_manager.get_info(session['username'])
-    name = user.FirstName # Show the first and last name in the index page
-    return render_template('index.html', username=session['username'], name=name, movies=movies, Response=Response, sub_one=sub_one, add_one=add_one)
+    name = user.FirstName # Show the first  in the index page
+    return render_template('index.html', username=session['username'], name=name, full_length=full_length, movies=movies, Response=Response, sub_one=sub_one, add_one=add_one, isinstance=isinstance, str=str, PAGE_SIZE=PAGE_SIZE, int=int)
 
 @app.route('/item', methods=['GET', 'POST'])
 def item():
