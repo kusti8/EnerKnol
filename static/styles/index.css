@@ -1,5 +1,34 @@
+html {
+    height: 100%;
+    background: #cbcfd6;
+    color: white;
+}
+
+h1 {
+    text-align: center;
+}
+
+.search {
+    border: none;
+    font-size: 200%;
+    margin: 8px;
+}
+
+.search-form {
+    padding: 8px;
+}
+
+.flex-search {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 30px;
+}
+
 .signout {
     position:absolute;
     top:0;
     right:0;
+    padding: 8px;
 }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ movie.title }}</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/item.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results==null){
+            return null;
+            }
+            else{
+            return decodeURI(results[1]) || 0;
+            }
+        }
+            function onClickExtra() {
+                var favorite = $('favorite-star').attr('active') !== undefined
+                $.post('/item', {
+                    id: $.urlParam('id'),
+                    favorite: favorite
+                })
+            }
+        </script>
+    <link rel="import" href="{{ url_for('static',filename='favorite-star.html') }}">
+</head>
+<body>
+<h1>{{ movie.title + ' ' + movie.year}} <favorite-star /> </h1>
+<div style="display: flex; flex-direction: row;">
+    <img src="{{ movie.image }}"/>
+    <div style="vertical-align: top; padding: 8px;">{{ movie.description }}<br>
+        <div style="color: #aaaaaa">
+            {{ movie.mpaa_rating + ' | ' + ', '.join(movie.genres) }}<br>
+            Director(s): {{ ', '.join(movie.directors) }} | Stars: {{ ', '.join(movie.stars) }}<br><br>
+            <strong>
+                ImDB Rating: {{ movie.imdb_rating/10.0 }}
+                {% if movie.metascore %}
+                | Metacritic: {{ movie.metascore }}
+                {% endif %}
+            </strong>
+        </div>
+    </div>
+</div>
+<script>
+    var favorite = '{{ favorite }}' === 'True'
+    if (favorite) {
+        $("favorite-star").attr('active', favorite )
+    }
+</script>
+</body>
+</html>

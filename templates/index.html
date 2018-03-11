@@ -1,14 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login to your Calendar</title>
+    <title>Welcome to MovieSearch</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/index.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="{{ url_for('static',filename='js/index.js') }}"></script>
 </head>
 <body>
-<title>Login to your Calendar</title>
-Hello!
+<div class="flex-search">
+<h1>{{ name }}, welcome to MovieSearch</h1>
+<img src="{{ url_for('static',filename='movie.JPG') }}" alt="MovieSearch">
 <form class="signout" method="post">
 <input type="submit" name="signout" value="Sign Out">
 </form>
+
+<input id="search-box" class="search" type="text" name="search_text" placeholder="Search.." />
+<button id="favorites" type="button" onclick="showFavorites()">Favorites</button>
+
+<ol id="search-results" start="">
+
+</ol>
+
+</div>
+<script>
+    $('#search-box').keypress(function (e) {
+        if (e.which === 13) {
+            $.post("{{ url_for('search') }}", {
+                general: $("#search-box").val()
+            }, function(data, status) {
+                renderSearchResults(data.hits.hits, "{{ url_for('item') }}")
+            })
+        }
+    })
+
+    function showFavorites() {
+        $.getJSON("{{ url_for('favorites') }}", function (data) {
+            console.log(data)
+            renderSearchResults(data, "{{ url_for('item') }}")
+        })
+    }
+</script>
 </body>
 </html>

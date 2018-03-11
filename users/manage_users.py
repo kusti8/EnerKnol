@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from passlib.apps import custom_app_context as pwd_context # Used for hashing
-from create_user_database import User, Base
+from models import User, Base
 
 class ManageUsers():
     def __init__(self): # Connect to the database
@@ -25,3 +25,23 @@ class ManageUsers():
         if queried_user is None: # username not found
             return False
         return pwd_context.verify(password, queried_user.Password) # Return whether the hashes match
+
+    def get_info(self, username):
+        return self.ses.query(User).filter(User.Username == username).one_or_none() # We assume there is one username
+
+    def set_favorite(self, username, id, favorite):
+        current = self.ses.query(User).filter(User.Username == username).one().Favorites
+        if not current:
+            current = ''
+        if favorite: # Add to the list
+            self.ses.query(User).filter(User.Username == username).one().Favorites = current + id + ',' # Comma separated string of favorite IDs
+        else: #Remove from the list
+            self.ses.query(User).filter(User.Username == username).one().Favorites = current.replace(id + ',', '')
+        self.ses.commit()
+
+    def get_favorites(self, username):
+        out_string = self.ses.query(User).filter(User.Username == username).one().Favorites
+        if not out_string or len(out_string.split(',')) == 1:
+            return []
+        else:
+            return out_string.split(',')[:-1] # Remove last comma

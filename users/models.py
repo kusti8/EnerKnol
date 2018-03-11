@@ -16,6 +16,7 @@ class User(Base):
     FirstName = Column(String)
     LastName = Column(String)
     Email = Column(String)
+    Favorites = Column(String)
 
 Base.metadata.bind = eng
 Base.metadata.create_all()
