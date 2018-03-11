@@ -3,6 +3,7 @@ from elasticsearch_dsl import DocType, Integer, Keyword, Text, Search, Boolean
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.utils import AttrList
 from mongoengine import *
+import os
 
 
 class MovieItem(DocType):
@@ -36,8 +37,8 @@ class MovieItemDB(Document):
 
 class MovieItemManager():
     def __init__(self):
-        connections.create_connection(hosts=['localhost'])
-        connect('movies')
+        connections.create_connection(hosts=[os.environ['ELASTIC_URL']])
+        connect('movies', host="ds263988.mlab.com", port=63988, username=os.environ['MONGO_USERNAME'], password=os.environ['MONGO_PASSWORD'])
 
     def copy_attributes(self, old, new):
         attributes = ['title', 'year', 'directors', 'genres', 'stars', 'description', 'mpaa_rating', 'imdb_rating', 'metascore', 'image']
@@ -49,7 +50,7 @@ class MovieItemManager():
             setattr(new, att, a)
         return new
 
-    def add(self, movie_info):
+    def add(self, movie_info): # Add a movie item. Expects a MovieItem type
         movie_info_db = MovieItemDB()
         movie_info_db = self.copy_attributes(movie_info, movie_info_db)
 
@@ -57,7 +58,7 @@ class MovieItemManager():
         movie_info._id = movie_info_db.id # Sync the IDs
         movie_info.save()
 
-    def search(self, general, filters=None, page=1, PAGE_SIZE=5):
+    def search(self, general, filters=None, page=1, PAGE_SIZE=5): # Search, using pagination
         search_fields = ['title', 'directors', 'stars', 'description']
         if filters:
             pass
@@ -68,7 +69,7 @@ class MovieItemManager():
         results = results[min_range:max_range].execute()
         return results
 
-    def get_movie(self, id):
+    def get_movie(self, id): # Return a movie from MongoDB
         results = MovieItemDB.objects(id=id)
         if results:
             return results[0].to_mongo().to_dict()
@@ -77,5 +78,5 @@ class MovieItemManager():
         
 
 if __name__ == '__main__': # Need to create Elasticsearch mappings
-    connections.create_connection(hosts=['localhost'])
+    connections.create_connection(hosts=[os.environ['ELASTIC_URL']])
     MovieItem.init()
